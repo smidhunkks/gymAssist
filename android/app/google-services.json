@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "639410442316",
+    "project_id": "gymassist-e72d4",
+    "storage_bucket": "gymassist-e72d4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:639410442316:android:2fc19c3d7b5061a98da4e9",
+        "android_client_info": {
+          "package_name": "com.example.gymassist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "639410442316-ac29nubc45mfd2qs5lvpfb15s5q2007q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.gymassist",
+            "certificate_hash": "60d52a33265fd291e9d919bb41906129c9d4196f"
+          }
+        },
+        {
+          "client_id": "639410442316-4f3m28jffo3bctr6vovre8n1doivpbpt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByRCb6FJmNhbn4h5k3pH4V7er7Ktsywn8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "639410442316-4f3m28jffo3bctr6vovre8n1doivpbpt.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "639410442316-gm5nmb0qpoaau7b2jvfjodjv1cq1gi0t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.gymassist"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -3,6 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:gymassist/screens/auth/login_screen.dart';
 import 'package:gymassist/screens/auth/signup_screen.dart';
 import 'package:gymassist/screens/dashboard/home_wrapper.dart';
+import 'package:gymassist/screens/trainer/home/trainee_list_screen.dart';
+import 'package:gymassist/screens/trainer/profile/trainer_profile.dart';
 import 'package:gymassist/splash.dart';
 import 'package:gymassist/utils/utils.dart';
 import 'routes/app_routes.dart';
@@ -54,6 +56,9 @@ class FitbuddyApp extends StatelessWidget {
         AppRoutes.login: (context) => const LoginScreen(),
         AppRoutes.signup: (context) => const SignUpScreen(),
         AppRoutes.homeWrapper: (context) => const HomeWrapper(),
+        AppRoutes.trainerProfile: (context) => const TrainerProfileScreen(),
+        AppRoutes.traineeList: (context) => const TraineeListScreen(),
+
       },
     );
   }

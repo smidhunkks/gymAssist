@@ -1,46 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:gymassist/screens/dashboard/trainee_home.dart';
-import 'package:gymassist/screens/dashboard/trainer_home.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/user_provider.dart';
+import 'trainer_home.dart';
+import 'trainee_home.dart';
+import '../auth/login_screen.dart';
 
-class HomeWrapper extends StatefulWidget {
+class HomeWrapper extends ConsumerWidget {
   const HomeWrapper({Key? key}) : super(key: key);
 
   @override
-  State<HomeWrapper> createState() => _HomeWrapperState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authStateProvider);
 
-class _HomeWrapperState extends State<HomeWrapper> {
-  bool? _isTrainer;
-  bool _loading = true;
+    return authState.when(
+      data: (user) {
+        if (user == null) return const LoginScreen();
 
-  @override
-  void initState() {
-    super.initState();
-    _fetchRole();
-  }
+        final userDoc = ref.watch(userDataProvider);
 
-  Future<void> _fetchRole() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return;
-    final doc =
-    await FirebaseFirestore.instance.collection('users').doc(uid).get();
-    setState(() {
-      _isTrainer = doc.data()?['isTrainer'] ?? false;
-      _loading = false;
-    });
-  }
+        return userDoc.when(
+          data: (data) {
+            if (data == null) {
+              return const Scaffold(
+                body: Center(child: Text('Loading user profile...')),
+              );
+            }
 
-  @override
-  Widget build(BuildContext context) {
-    if (_loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-    return _isTrainer == true
-        ? const TrainerHome()
-        : const TraineeHome();
+            // Ensure correct type
+            print("user data : $data");
+            final dynamic rawFlag = data['isTrainer'];
+            final bool isTrainer = rawFlag == true; // strict boolean check
+            print("isTrainer - $isTrainer");
+            return isTrainer ? const TrainerHome() : const TraineeHome();
+          },
+          loading: () => const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          ),
+          error: (e, _) => Scaffold(
+            body: Center(child: Text('Error loading user data: $e')),
+          ),
+        );
+      },
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (e, _) => Scaffold(body: Center(child: Text('Auth error: $e'))),
+    );
   }
 }

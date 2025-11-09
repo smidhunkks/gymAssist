@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:gymassist/screens/auth/login_screen.dart';
@@ -5,13 +6,14 @@ import 'package:gymassist/screens/auth/signup_screen.dart';
 import 'package:gymassist/screens/dashboard/home_wrapper.dart';
 import 'package:gymassist/screens/trainer/home/trainee_list_screen.dart';
 import 'package:gymassist/screens/trainer/profile/trainer_profile.dart';
+import 'package:gymassist/screens/trainee/link_trainer.dart';
 import 'package:gymassist/splash.dart';
 import 'package:gymassist/utils/utils.dart';
 import 'routes/app_routes.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const FitbuddyApp());
+  runApp(const ProviderScope(child: FitbuddyApp()));
 }
 
 class FitbuddyApp extends StatelessWidget {
@@ -58,6 +60,7 @@ class FitbuddyApp extends StatelessWidget {
         AppRoutes.homeWrapper: (context) => const HomeWrapper(),
         AppRoutes.trainerProfile: (context) => const TrainerProfileScreen(),
         AppRoutes.traineeList: (context) => const TraineeListScreen(),
+        AppRoutes.linkTrainer: (context) => const LinkTrainerScreen(),
 
       },
     );

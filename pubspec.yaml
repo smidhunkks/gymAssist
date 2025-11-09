@@ -35,6 +35,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_email_sender: ^8.0.0
+  flutter_riverpod: ^3.0.3
   flutter_semi_circle: ^1.0.0
   font_awesome_flutter: ^10.8.0
   google_fonts: ^6.2.1

@@ -1,127 +1,72 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gymassist/providers/auth_provider.dart';
+import '../../providers/user_provider.dart';
 import '../../routes/app_routes.dart';
 
-class TrainerHome extends StatefulWidget {
+class TrainerHome extends ConsumerWidget {
   const TrainerHome({Key? key}) : super(key: key);
 
   @override
-  State<TrainerHome> createState() => _TrainerHomeState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userAsync = ref.watch(userDataProvider);
 
-class _TrainerHomeState extends State<TrainerHome> {
-  String? trainerName;
-  String? trainerCode;
-  bool loading = true;
+    return userAsync.when(
+      data: (data) {
+        if (data == null) return const Center(child: Text('No data found'));
+        final name = data['displayName'] ?? 'Trainer';
+        final trainerCode = data['trainerCode'] ?? 'N/A';
 
-  @override
-  void initState() {
-    super.initState();
-    _loadTrainerData();
-  }
-
-  Future<void> _loadTrainerData() async {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    final doc =
-    await FirebaseFirestore.instance.collection('users').doc(uid).get();
-
-    setState(() {
-      trainerName = doc.data()?['displayName'] ?? 'Trainer';
-      trainerCode = doc.data()?['trainerCode'] ?? 'N/A';
-      loading = false;
-    });
-  }
-
-  void _logout() async {
-    await FirebaseAuth.instance.signOut();
-    if (context.mounted) {
-      Navigator.pushReplacementNamed(context, AppRoutes.login);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Trainer Dashboard'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _logout,
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Welcome, $trainerName 👋',
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Trainer Dashboard'),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.logout),
+                onPressed: () async {
+                  await ref.read(firebaseAuthProvider).signOut();
+                },
               ),
-            ),
-            const SizedBox(height: 20),
-            Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              child: ListTile(
-                leading: const Icon(Icons.qr_code, size: 32),
-                title: const Text('Your Trainer Code'),
-                subtitle: Text(
-                  trainerCode ?? '',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
+            ],
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Welcome, $name 👋',
+                    style: const TextStyle(
+                        fontSize: 22, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 20),
+                Card(
+                  elevation: 2,
+                  child: ListTile(
+                    title: const Text('Your Trainer Code'),
+                    subtitle: Text(
+                      trainerCode,
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.copy),
+                const SizedBox(height: 30),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.people),
+                  label: const Text('View Trainees'),
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Trainer code copied!')),
-                    );
+                    Navigator.pushNamed(context, AppRoutes.traineeList);
                   },
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 48)),
                 ),
-              ),
+              ],
             ),
-            const SizedBox(height: 30),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.people),
-              label: const Text('View Trainees'),
-              onPressed: () {
-                Navigator.pushNamed(context, AppRoutes.traineeList);
-              },
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 50),
-              ),
-            ),
-            const SizedBox(height: 15),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.person),
-              label: const Text('View Profile'),
-              onPressed: () {
-                Navigator.pushNamed(context, AppRoutes.trainerProfile);
-              },
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 50),
-                backgroundColor: Colors.grey.shade700,
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
+      loading: () =>
+      const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (e, _) => Scaffold(body: Center(child: Text('Error: $e'))),
     );
   }
 }
